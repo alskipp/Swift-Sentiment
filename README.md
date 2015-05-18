@@ -6,9 +6,10 @@ This is a demonstration of how to use function composition in Swift to construct
 The functions are combined together and used as follows:
 
 ```swift
-let rateString = downCase
+let rateString = removePunctuation
+              •> toLowercase
               •> words
-              •> rateWords
+              •> rateWords(basicWordRater)
               •> ratingDescription
 
 rateString("Happy, happy, joy, joy!")
