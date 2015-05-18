@@ -10,13 +10,26 @@ As a final touch, an emoji **String** is displayed to represent the sentiment of
 The most interesting aspect of the code is the way the algorithm is built up by composing smaller functions together.
 */
 import Foundation
-//: **Compose function forwards**
+/*: 
+**Compose function forwards**
+
+The compose operator takes two functions as arguments (**A -> B**) & (**B -> C**) and returns a function (**A -> C**).
+This operator can be used to thread together a chain of functions. In Haskell, function composition is from right to left.
+In Swift it seems more natural to compose from left to right, hence the decision to use a chunky **dot** operator with
+a right pointing arrow **•>**
+*/
 infix operator •> {associativity right precedence 170}
 func •> <A,B,C>(f:A -> B, g:B -> C) -> A -> C {
   return { x in g(f(x)) }
 }
-//: Curried version of reduce with the order of the parameters switched
-func reduce<A:SequenceType,B>(f:(B, A.Generator.Element) -> B)(_ i:B)(xs:A) -> B {
+/*:
+**Curried version of *reduce* with the order of the parameters switched**
+
+The built in **reduce** function takes all its arguments together with the *combine* function as the last argument.
+To be able to compose the **reduce** function, it's far more useful to take each argument separately and
+have the *combine* function as the first argument.
+*/
+func reduce<A:SequenceType,B>(f:(B, A.Generator.Element) -> B)(_ i:B)(_ xs:A) -> B {
   return reduce(xs, i, f)
 }
 /*:
@@ -42,7 +55,7 @@ The files can be found in the *Resources* folder the **wordSetFromFile** functio
 */
 let positiveWords: Set<String> = wordSetFromFile("positive-words")
 let negativeWords: Set<String> = wordSetFromFile("negative-words")
-//: **lowercaseString** wrapped in a function to allow function composition: see below.
+//: **lowercaseString** method wrapped in a function to allow function composition.
 func downCase(s:String) -> String {
   return s.lowercaseString
 }
@@ -133,4 +146,14 @@ stringFromFile("love_will_tear_us_apart") <*> rateString
 
 /*:
 Who'd have realized, it's actually a very jolly song?
+
+## **Conclusion**
+
+As the final result shows, this isn't the most sophisticated example of a sentiment analysis algorithm.
+However the real purpose of this Playground is to demonstrate the following points:
+
+- An algorithm can be broken down into discreet steps.
+- Each step can be implemented as a function that takes an argument and returns a value.
+- Once all the individual pieces have been implemented, they can be composed together to create the final algorithm.
+- The advantage of this approach is that each individual component can be tested separately and can also be reused for other purposes.
 */
