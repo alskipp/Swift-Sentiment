@@ -26,45 +26,39 @@ func •> <A,B,C>(f:A -> B, g:B -> C) -> A -> C {
 ### **Implementation**
 
 There are several tasks that need taking care of.
-An input **String** needs to be converted to lowercase, then split into an **Array** of **Strings**.
-The **Sets** of positive and negative words will contain lowercase **Strings**, hence the need to convert the input **String** to lowercase.
+An input **String** needs to have punctuation removed and be converted to lowercase, then split into an **Array** of **Strings**.
+The individual words will then each be fed into a rating function, which will accumulate a **Rating** for the entire **String**.
 
 * * *
 
-A **NSCharacterSet** which is a combination of **whitespaceAndNewlineCharacterSet** & **punctuationCharacterSet**.
-This will be used to split strings into an **Array** of words.
-*/
-let splitCharacterSet: NSCharacterSet = {
-  let chars = NSMutableCharacterSet.whitespaceAndNewlineCharacterSet()
-  chars.formUnionWithCharacterSet(NSCharacterSet.punctuationCharacterSet())
-  return chars.copy() as! NSCharacterSet
-}()
-/*:
 The **positiveWords** & **negativeWords** are loaded from files.
 The files can be found in the *Resources* folder the **wordSetFromFile** function is defined in the *Sources* folder.
 */
 let positiveWords: Set<String> = wordSetFromFile("positive-words")
 let negativeWords: Set<String> = wordSetFromFile("negative-words")
-//: **lowercaseString** method wrapped in a function to allow function composition.
+//: Wrap the **lowercaseString** method in a function to allow function composition.
 func toLowercase(s:String) -> String {
   return s.lowercaseString
 }
+//: **removePunctuation**, does what it says on the tin.
+func removePunctuation(str:String) -> String {
+  return join("", str.componentsSeparatedByCharactersInSet(NSCharacterSet.punctuationCharacterSet()))
+}
 //: Split a **String** into words, filtering out empty strings
 func words(str:String) -> [String] {
-  return str.componentsSeparatedByCharactersInSet(splitCharacterSet).filter { !$0.isEmpty }
+  return str.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).filter { !$0.isEmpty }
 }
 
 typealias Rating = Int
 //: Positive words are given a rating of **1**, negative **-1**, neutral **0**.
-func rateWord(word:String) -> Rating {
+func basicWordRater(word:String) -> Rating {
   if positiveWords.contains(word) { return 1 }
   if negativeWords.contains(word) { return -1 }
   return 0
 }
-
-//: Apply the **rateWord** function to each word in an **Array**, accumulating the result
-func rateWords(words:[String]) -> Rating {
-  return reduce(words, 0) { rating, word in rating + rateWord(word) }
+//: Apply the **ratingFunc** function to each word in the supplied **Array**, accumulating the result
+func rateWords(ratingFunc:String -> Rating)(words:[String]) -> Rating {
+  return reduce(words, 0) { rating, word in rating + ratingFunc(word) }
 }
 /*: 
 Show an appropriate number of emoji for the **Rating**.
@@ -88,13 +82,15 @@ func ratingDescription(r:Rating) -> String {
 With all the pieces in place the rating function can now be defined.
 Simply compose together the separate functions using the forward compose operator **•>**
 
-The first thing to do is **downcase** the input string, followed by splitting it into **Words**,
-**reduce** is then used to accumulate a **Rating** using the **rateWord** function.
+Given an input **String**, first use **removePunctuation**, followed by **toLowercase**.
+Then split the result into an **Array** of words with the **words** function.
+Calculate a **Rating** for the **Array** by using **rateWords** with **basicWordRater** as an argument.
 Finally, convert the result into a descriptive emoji string using the **ratingDescription** function.
 */
-let rateString = toLowercase
+let rateString = removePunctuation
+              •> toLowercase
               •> words
-              •> rateWords
+              •> rateWords(basicWordRater)
               •> ratingDescription
 /*:
 ## **Time to test the function**
