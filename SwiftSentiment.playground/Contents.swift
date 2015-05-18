@@ -46,7 +46,7 @@ The files can be found in the *Resources* folder the **wordSetFromFile** functio
 let positiveWords: Set<String> = wordSetFromFile("positive-words")
 let negativeWords: Set<String> = wordSetFromFile("negative-words")
 //: **lowercaseString** method wrapped in a function to allow function composition.
-func downCase(s:String) -> String {
+func toLowercase(s:String) -> String {
   return s.lowercaseString
 }
 //: Split a **String** into words, filtering out empty strings
@@ -92,7 +92,7 @@ The first thing to do is **downcase** the input string, followed by splitting it
 **reduce** is then used to accumulate a **Rating** using the **rateWord** function.
 Finally, convert the result into a descriptive emoji string using the **ratingDescription** function.
 */
-let rateString = downCase
+let rateString = toLowercase
               •> words
               •> rateWords
               •> ratingDescription
