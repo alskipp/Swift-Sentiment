@@ -8,7 +8,7 @@ The functions are combined together and used as follows:
 ```swift
 let rateString = downCase
               •> words
-              •> reduce({ rating, word in rating + rateWord(word) })(0)
+              •> rateWords
               •> ratingDescription
 
 rateString("Happy, happy, joy, joy!")

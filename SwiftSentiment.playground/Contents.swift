@@ -23,16 +23,6 @@ func •> <A,B,C>(f:A -> B, g:B -> C) -> A -> C {
   return { x in g(f(x)) }
 }
 /*:
-**Curried version of *reduce* with the order of the parameters switched**
-
-The built in **reduce** function takes all its arguments together with the *combine* function as the last argument.
-To be able to compose the **reduce** function, it's far more useful to take each argument separately and
-have the *combine* function as the first argument.
-*/
-func reduce<A:SequenceType,B>(f:(B, A.Generator.Element) -> B)(_ i:B)(_ xs:A) -> B {
-  return reduce(xs, i, f)
-}
-/*:
 ### **Implementation**
 
 There are several tasks that need taking care of.
@@ -71,6 +61,11 @@ func rateWord(word:String) -> Rating {
   if negativeWords.contains(word) { return -1 }
   return 0
 }
+
+//: Apply the **rateWord** function to each word in an **Array**, accumulating the result
+func rateWords(words:[String]) -> Rating {
+  return reduce(words, 0) { rating, word in rating + rateWord(word) }
+}
 /*: 
 Show an appropriate number of emoji for the **Rating**.
 
@@ -99,7 +94,7 @@ Finally, convert the result into a descriptive emoji string using the **ratingDe
 */
 let rateString = downCase
               •> words
-              •> reduce({ rating, word in rating + rateWord(word) })(0)
+              •> rateWords
               •> ratingDescription
 /*:
 ## **Time to test the function**
