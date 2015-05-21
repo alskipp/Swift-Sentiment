@@ -112,28 +112,28 @@ It returns an **Optional<String>**, hence the use of the <*> operator to call **
 
 map for Optional as an infix operator
 */
-infix operator <*> { associativity left }
-func <*> <A,B>(x:A?, f:A -> B) -> B? {
-return map(x, f)
+infix operator <^> { associativity left }
+func <^> <A,B>(x:A?, f:A -> B) -> B? {
+  return map(x, f)
 }
 
-stringFromFile("naked_lunch_extract") <*> rateString
+stringFromFile("naked_lunch_extract") <^> rateString
 
-stringFromFile("paradise_lost_extract") <*> rateString
+stringFromFile("paradise_lost_extract") <^> rateString
 
-stringFromFile("the_hollowmen") <*> rateString
+stringFromFile("the_hollowmen") <^> rateString
 
-stringFromFile("doors_of_perception_extract") <*> rateString
+stringFromFile("doors_of_perception_extract") <^> rateString
 
-stringFromFile("once_in_a_lifetime") <*> rateString
+stringFromFile("once_in_a_lifetime") <^> rateString
 
-stringFromFile("John_chapter1") <*> rateString
+stringFromFile("John_chapter1") <^> rateString
 
 /*:
 The results have looked reasonable so far, but it's not too difficult to demonstrate the inadequacy of the algorithm.
 The Joy Division song, "Love will tear us apart", is notoriously miserable. Let's rate it:
 */
-stringFromFile("love_will_tear_us_apart") <*> rateString
+stringFromFile("love_will_tear_us_apart") <^> rateString
 
 /*:
 Who'd have realized, it's actually a very jolly song?
