@@ -42,7 +42,7 @@ func toLowercase(s:String) -> String {
 }
 //: **removePunctuation**, does what it says on the tin.
 func removePunctuation(str:String) -> String {
-  return join("", str.componentsSeparatedByCharactersInSet(NSCharacterSet.punctuationCharacterSet()))
+  return str.componentsSeparatedByCharactersInSet(NSCharacterSet.punctuationCharacterSet()).joinWithSeparator("")
 }
 //: Split a **String** into words, filtering out empty strings
 func words(str:String) -> [String] {
@@ -58,7 +58,7 @@ func basicWordRater(word:String) -> Rating {
 }
 //: Apply the **ratingFunc** function to each word in the supplied **Array**, accumulating the result
 func rateWords(ratingFunc:String -> Rating)(words:[String]) -> Rating {
-  return reduce(words, 0) { rating, word in rating + ratingFunc(word) }
+  return words.reduce(0) { rating, word in rating + ratingFunc(word) }
 }
 /*: 
 Show an appropriate number of emoji for the **Rating**.
@@ -71,8 +71,8 @@ Show an appropriate number of emoji for the **Rating**.
 */
 func ratingDescription(r:Rating) -> String {
   switch r {
-  case Int.min..<0: return reduce(1...abs(r), "") { str, _ in str + "😱" }
-  case 1..<Int.max: return reduce(1...r, "") { str, _ in str + "😀" }
+  case Int.min..<0: return (1...abs(r)).reduce("") { str, _ in str + "😱" }
+  case 1..<Int.max: return (1...r).reduce("") { str, _ in str + "😀" }
   default: return "😶"
   }
 }
@@ -114,7 +114,7 @@ map for Optional as an infix operator
 */
 infix operator <^> { associativity left }
 func <^> <A,B>(x:A?, f:A -> B) -> B? {
-  return map(x, f)
+  return x.map(f)
 }
 
 stringFromFile("naked_lunch_extract") <^> rateString
